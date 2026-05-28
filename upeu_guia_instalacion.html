@@ -3,685 +3,1391 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Guía oficial de instalación de UPeU Events – Universidad Peruana Unión">
 <title>UPeU Events – Guía de Instalación</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
 <style>
-  :root {
-    --upeu-blue:     #003082;
-    --upeu-blue-mid: #1255c8;
-    --upeu-blue-lt:  #2e7df7;
-    --upeu-gold:     #f0a500;
-    --upeu-gold-lt:  #ffc84a;
-    --upeu-dark:     #00112e;
-    --upeu-white:    #f4f8ff;
-    --upeu-gray:     #b0c4de;
-    --accent-cyan:   #00d4ff;
-    --radius:        14px;
-  }
+/* ═══════════════════════════════════════════════════════════
+   TOKENS GLOBALES
+═══════════════════════════════════════════════════════════ */
+:root {
+  --blue:        #003082;
+  --blue-mid:    #1255c8;
+  --blue-lt:     #2e7df7;
+  --gold:        #f0a500;
+  --gold-lt:     #ffc84a;
+  --dark:        #00112e;
+  --darker:      #000c1f;
+  --white:       #f4f8ff;
+  --gray:        #b0c4de;
+  --cyan:        #00d4ff;
+  --radius:      16px;
+  --t:           0.3s ease;
+}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ═══════════════════════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Exo 2', sans-serif;
+  background: var(--darker);
+  color: var(--white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
 
-  html { scroll-behavior: smooth; }
+/* Textura noise fija de fondo */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: .28;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
 
-  body {
-    font-family: 'Exo 2', sans-serif;
-    background: var(--upeu-dark);
-    color: var(--upeu-white);
-    overflow-x: hidden;
-  }
+/* ═══════════════════════════════════════════════════════════
+   ADMIN BAR — sticky, visible solo en admin-mode
+═══════════════════════════════════════════════════════════ */
+#admin-bar {
+  display: none;
+  position: sticky; top: 0; z-index: 999;
+  background: linear-gradient(90deg, #140800 0%, #251000 100%);
+  border-bottom: 1px solid rgba(240,165,0,.5);
+  padding: 9px 24px;
+  align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  box-shadow: 0 2px 24px rgba(240,165,0,.18);
+}
+body.admin-mode #admin-bar { display: flex; }
 
-  /* ── NOISE OVERLAY ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 0; opacity: .35;
-  }
+.admin-bar-badge {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .75rem; letter-spacing: .12em; color: var(--gold);
+}
+.admin-bar-badge .ab-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gold); animation: pulse 1.4s infinite;
+}
+.admin-bar-hint { font-size: .7rem; color: rgba(240,165,0,.55); font-family: 'Share Tech Mono', monospace; }
+.admin-bar-btn {
+  background: var(--gold); color: var(--darker);
+  border: none; border-radius: 8px; padding: 7px 20px;
+  font-size: .78rem; font-weight: 800; font-family: 'Exo 2', sans-serif;
+  cursor: pointer; transition: opacity var(--t), transform var(--t);
+}
+.admin-bar-btn:hover { opacity: .82; transform: translateY(-1px); }
 
-  /* ── HERO ── */
-  .hero {
-    position: relative;
-    min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center;
-    padding: 80px 24px 60px;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, #1a4dbf55 0%, transparent 70%),
-      radial-gradient(ellipse 50% 40% at 90% 80%, #f0a50022 0%, transparent 60%),
-      linear-gradient(160deg, #001a4a 0%, #00112e 60%, #000d20 100%);
-    overflow: hidden;
-  }
+/* ═══════════════════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════════════════ */
+.hero {
+  position: relative; min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 100px 24px 80px; overflow: hidden;
+  background:
+    radial-gradient(ellipse 90% 65% at 50% -5%, rgba(26,77,191,.42) 0%, transparent 68%),
+    radial-gradient(ellipse 55% 45% at 92% 85%, rgba(240,165,0,.14) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 8% 70%, rgba(0,212,255,.07) 0%, transparent 55%),
+    linear-gradient(168deg, #001847 0%, #00112e 55%, #000c1f 100%);
+}
 
-  .hero-grid-bg {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(46,125,247,.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(46,125,247,.07) 1px, transparent 1px);
-    background-size: 50px 50px;
-    mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 30%, transparent 80%);
-  }
+/* Grid perspectiva */
+.hero-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(46,125,247,.065) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46,125,247,.065) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(ellipse 110% 90% at 50% 0%, black 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 110% 90% at 50% 0%, black 20%, transparent 75%);
+}
 
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: rgba(46,125,247,.15);
-    border: 1px solid rgba(46,125,247,.4);
-    border-radius: 100px;
-    padding: 8px 20px;
-    font-size: .75rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
-    color: var(--accent-cyan);
-    margin-bottom: 28px;
-    animation: fadeUp .6s ease both;
-  }
+/* Partícula de luz orbital */
+.hero-orb {
+  position: absolute; pointer-events: none;
+  border-radius: 50%; filter: blur(80px); opacity: .35;
+}
+.hero-orb-1 {
+  width: 420px; height: 420px; top: -120px; left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(46,125,247,.5), transparent 70%);
+  animation: orbFloat 8s ease-in-out infinite;
+}
+.hero-orb-2 {
+  width: 260px; height: 260px; bottom: 5%; right: 8%;
+  background: radial-gradient(circle, rgba(240,165,0,.35), transparent 70%);
+  animation: orbFloat 11s ease-in-out infinite reverse;
+}
 
-  .hero-badge span { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-cyan); animation: pulse 1.5s infinite; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(46,125,247,.14);
+  border: 1px solid rgba(46,125,247,.45);
+  border-radius: 100px; padding: 8px 22px;
+  font-size: .72rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--cyan); margin-bottom: 30px; position: relative; z-index: 1;
+  animation: fadeUp .65s ease both;
+}
+.hero-badge .pdot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--cyan); animation: pulse 1.5s infinite; flex-shrink: 0;
+}
 
-  .hero h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(3rem, 10vw, 7rem);
-    line-height: .95;
-    letter-spacing: .02em;
-    animation: fadeUp .6s .1s ease both;
-  }
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.2rem, 11vw, 7.5rem);
+  line-height: .93; letter-spacing: .025em;
+  position: relative; z-index: 1;
+  animation: fadeUp .65s .1s ease both;
+}
+.hero h1 .hl { color: var(--gold); }
 
-  .hero h1 span { color: var(--upeu-gold); }
+.hero-sub {
+  font-size: clamp(.9rem, 1.8vw, 1.12rem); font-weight: 300;
+  color: var(--gray); max-width: 540px; margin: 22px auto 44px;
+  line-height: 1.75; position: relative; z-index: 1;
+  animation: fadeUp .65s .2s ease both;
+}
 
-  .hero-sub {
-    font-size: clamp(.9rem, 2vw, 1.15rem);
-    font-weight: 300; color: var(--upeu-gray);
-    max-width: 560px; margin: 20px auto 40px;
-    line-height: 1.7;
-    animation: fadeUp .6s .2s ease both;
-  }
+.hero-actions {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center;
+  position: relative; z-index: 1;
+  animation: fadeUp .65s .3s ease both;
+}
 
-  .hero-cta {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: linear-gradient(135deg, var(--upeu-blue-mid), var(--upeu-blue-lt));
-    color: #fff;
-    font-family: 'Exo 2', sans-serif;
-    font-weight: 700; font-size: 1rem;
-    padding: 14px 32px; border-radius: 100px;
-    text-decoration: none;
-    box-shadow: 0 0 30px rgba(46,125,247,.4);
-    transition: transform .2s, box-shadow .2s;
-    animation: fadeUp .6s .3s ease both;
-  }
-  .hero-cta:hover { transform: translateY(-3px); box-shadow: 0 8px 40px rgba(46,125,247,.6); }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--blue-mid), var(--blue-lt));
+  color: #fff; font-family: 'Exo 2', sans-serif;
+  font-weight: 700; font-size: 1rem;
+  padding: 15px 34px; border-radius: 100px; text-decoration: none;
+  box-shadow: 0 0 32px rgba(46,125,247,.38);
+  transition: transform .22s, box-shadow .22s;
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 44px rgba(46,125,247,.58); }
+.btn-primary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
 
-  .hero-scroll {
-    position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    font-size: .7rem; letter-spacing: .15em; color: var(--upeu-gray);
-    opacity: .7;
-  }
-  .hero-scroll::after {
-    content: '';
-    display: block; width: 1px; height: 40px;
-    background: linear-gradient(to bottom, var(--upeu-gray), transparent);
-    animation: scrollLine 1.6s ease-in-out infinite;
-  }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid rgba(176,196,222,.3); color: var(--gray);
+  font-weight: 600; font-size: .9rem; padding: 14px 26px;
+  border-radius: 100px; text-decoration: none;
+  transition: border-color .22s, color .22s, background .22s;
+}
+.btn-ghost:hover { border-color: rgba(176,196,222,.6); color: var(--white); background: rgba(255,255,255,.04); }
 
-  /* ── SECTION WRAPPER ── */
-  .section { position: relative; z-index: 1; padding: 80px 24px; max-width: 1100px; margin: 0 auto; }
+.hero-scroll {
+  position: absolute; bottom: 32px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-size: .65rem; letter-spacing: .2em; color: var(--gray); opacity: .6;
+}
+.hero-scroll::after {
+  content: ''; display: block; width: 1px; height: 38px;
+  background: linear-gradient(to bottom, var(--gray), transparent);
+  animation: scrollLine 1.7s ease-in-out infinite;
+}
 
-  .section-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .75rem; letter-spacing: .2em; color: var(--upeu-gold);
-    text-transform: uppercase; margin-bottom: 14px;
-  }
+/* ═══════════════════════════════════════════════════════════
+   LAYOUT WRAPPER
+═══════════════════════════════════════════════════════════ */
+.section {
+  position: relative; z-index: 1;
+  padding: 88px 28px; max-width: 1120px; margin: 0 auto;
+}
+.section-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .72rem; letter-spacing: .22em; color: var(--gold);
+  text-transform: uppercase; margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.8rem); line-height: .97; margin-bottom: 52px;
+}
+.divider {
+  max-width: 1120px; margin: 0 auto; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(46,125,247,.28), transparent);
+}
 
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    line-height: 1; margin-bottom: 48px;
-  }
+/* ═══════════════════════════════════════════════════════════
+   REQUISITOS
+═══════════════════════════════════════════════════════════ */
+.req-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+.req-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(46,125,247,.14);
+  border-radius: 14px; padding: 22px 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  transition: border-color var(--t), background var(--t);
+}
+.req-card:hover {
+  border-color: rgba(46,125,247,.32);
+  background: rgba(46,125,247,.05);
+}
+.req-icon { font-size: 1.55rem; flex-shrink: 0; margin-top: 1px; }
+.req-card h4 { font-weight: 700; font-size: .92rem; margin-bottom: 5px; color: var(--white); }
+.req-card p  { font-size: .8rem; color: var(--gray); line-height: 1.55; }
 
-  /* ── STEPS ── */
-  .steps-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-  }
+/* ═══════════════════════════════════════════════════════════
+   PASOS
+═══════════════════════════════════════════════════════════ */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(285px, 1fr));
+  gap: 22px; counter-reset: steps;
+}
+.step-card {
+  background: linear-gradient(150deg, rgba(255,255,255,.045), rgba(255,255,255,.01));
+  border: 1px solid rgba(46,125,247,.18);
+  border-radius: var(--radius); padding: 36px 30px;
+  position: relative; overflow: hidden;
+  transition: transform var(--t), border-color var(--t), box-shadow var(--t);
+}
+.step-card:hover {
+  transform: translateY(-7px);
+  border-color: rgba(46,125,247,.48);
+  box-shadow: 0 22px 56px rgba(0,48,130,.28);
+}
+.step-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue-lt), var(--cyan));
+  opacity: 0; transition: opacity var(--t);
+}
+.step-card:hover::before { opacity: 1; }
+/* Número grande de fondo decorativo */
+.step-card::after {
+  content: attr(data-n);
+  position: absolute; right: 20px; bottom: -12px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 7rem;
+  color: rgba(46,125,247,.06); line-height: 1; pointer-events: none;
+}
+.step-num {
+  width: 46px; height: 46px; border-radius: 13px;
+  background: linear-gradient(135deg, var(--blue-mid), var(--blue-lt));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.45rem; color: #fff;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 22px rgba(46,125,247,.38);
+}
+.step-icon { font-size: 2.5rem; margin-bottom: 14px; display: block; }
+.step-card h3 { font-weight: 700; font-size: 1.08rem; margin-bottom: 10px; color: var(--white); }
+.step-card p  { font-size: .88rem; color: var(--gray); line-height: 1.65; }
 
-  .step-card {
-    background: linear-gradient(145deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
-    border: 1px solid rgba(46,125,247,.2);
-    border-radius: var(--radius);
-    padding: 32px 28px;
-    position: relative;
-    overflow: hidden;
-    transition: transform .3s, border-color .3s, box-shadow .3s;
-  }
-  .step-card:hover {
-    transform: translateY(-6px);
-    border-color: rgba(46,125,247,.5);
-    box-shadow: 0 20px 50px rgba(0,48,130,.3);
-  }
-  .step-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, var(--upeu-blue-lt), var(--accent-cyan));
-    opacity: 0; transition: opacity .3s;
-  }
-  .step-card:hover::before { opacity: 1; }
+/* ═══════════════════════════════════════════════════════════
+   QR + DESCARGA
+═══════════════════════════════════════════════════════════ */
+.qr-section {
+  background: linear-gradient(140deg, rgba(0,48,130,.28) 0%, rgba(0,20,60,.38) 100%);
+  border: 1px solid rgba(46,125,247,.22);
+  border-radius: 22px; padding: 52px 48px;
+  display: flex; align-items: center; gap: 64px; flex-wrap: wrap;
+  position: relative; overflow: hidden;
+}
+/* Glow sutil detrás del QR */
+.qr-section::before {
+  content: ''; position: absolute;
+  top: -80px; left: -80px; width: 420px; height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240,165,0,.12), transparent 65%);
+  pointer-events: none;
+  animation: orbFloat 9s ease-in-out infinite;
+}
+/* Segundo glow decorativo */
+.qr-section::after {
+  content: ''; position: absolute;
+  bottom: -60px; right: -40px; width: 280px; height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(46,125,247,.08), transparent 65%);
+  pointer-events: none;
+}
 
-  .step-number {
-    width: 44px; height: 44px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--upeu-blue-mid), var(--upeu-blue-lt));
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: #fff;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 20px rgba(46,125,247,.4);
-  }
+/* Contenedor QR premium */
+.qr-frame {
+  flex-shrink: 0; position: relative;
+  width: 260px; height: 260px;
+}
+/* Anillo exterior giratorio */
+.qr-ring {
+  position: absolute; inset: -12px;
+  border-radius: 26px;
+  background: conic-gradient(
+    rgba(240,165,0,.0) 0deg,
+    rgba(240,165,0,.6) 90deg,
+    rgba(255,200,74,.8) 180deg,
+    rgba(240,165,0,.0) 270deg,
+    rgba(240,165,0,.0) 360deg
+  );
+  animation: qrSpin 4s linear infinite;
+  opacity: 0;
+  transition: opacity .5s;
+}
+.qr-frame:hover .qr-ring { opacity: 1; }
+/* Máscara interna para el efecto anillo */
+.qr-ring::before {
+  content: '';
+  position: absolute; inset: 3px;
+  background: var(--darker);
+  border-radius: 23px;
+}
+@keyframes qrSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
 
-  .step-card h3 {
-    font-weight: 700; font-size: 1.05rem; margin-bottom: 10px;
-    color: var(--upeu-white);
-  }
-  .step-card p { font-size: .9rem; color: var(--upeu-gray); line-height: 1.6; }
+.qr-frame-inner {
+  position: absolute; inset: 0;
+  background: #fff; border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  border: 3px solid var(--gold);
+  box-shadow:
+    0 0 0 1px rgba(240,165,0,.35),
+    0 0 30px rgba(240,165,0,.32),
+    0 0 70px rgba(240,165,0,.14),
+    0 16px 48px rgba(0,0,0,.45);
+  transition: box-shadow .4s, transform .4s;
+}
+.qr-frame:hover .qr-frame-inner {
+  box-shadow:
+    0 0 0 1px rgba(240,165,0,.6),
+    0 0 50px rgba(240,165,0,.52),
+    0 0 110px rgba(240,165,0,.2),
+    0 20px 60px rgba(0,0,0,.55);
+  transform: scale(1.025);
+}
 
-  .step-icon {
-    font-size: 2.4rem; margin-bottom: 12px;
-  }
+/* Esquinas decorativas */
+.qr-corner {
+  position: absolute; width: 22px; height: 22px;
+  border-color: var(--gold); border-style: solid; opacity: .85;
+  transition: opacity .3s, width .3s, height .3s;
+  z-index: 2;
+}
+.qr-frame:hover .qr-corner { opacity: 1; width: 28px; height: 28px; }
+.qr-corner-tl { top: -8px; left: -8px; border-width: 2.5px 0 0 2.5px; border-radius: 5px 0 0 0; }
+.qr-corner-tr { top: -8px; right: -8px; border-width: 2.5px 2.5px 0 0; border-radius: 0 5px 0 0; }
+.qr-corner-bl { bottom: -8px; left: -8px; border-width: 0 0 2.5px 2.5px; border-radius: 0 0 0 5px; }
+.qr-corner-br { bottom: -8px; right: -8px; border-width: 0 2.5px 2.5px 0; border-radius: 0 0 5px 0; }
 
-  /* ── QR SECTION ── */
-  .qr-section {
-    background: linear-gradient(135deg, rgba(0,48,130,.3), rgba(0,30,80,.4));
-    border: 1px solid rgba(46,125,247,.25);
-    border-radius: 20px;
-    padding: 50px 40px;
-    display: flex; align-items: center; gap: 60px;
-    flex-wrap: wrap;
-  }
+#qr-img-el {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  padding: 10px;
+  display: block;
+}
+#qr-placeholder-text {
+  font-size: .78rem; color: #888; text-align: center;
+  line-height: 1.65; padding: 16px;
+  font-family: 'Share Tech Mono', monospace;
+}
 
-  .qr-placeholder {
-    flex-shrink: 0;
-    width: 200px; height: 200px;
-    background: #fff;
-    border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .75rem; color: #333; text-align: center;
-    padding: 12px;
-    border: 4px solid var(--upeu-gold);
-    box-shadow: 0 0 30px rgba(240,165,0,.3);
-    overflow: hidden;
-  }
-  .qr-placeholder img { width: 100%; height: 100%; object-fit: contain; }
+/* Badge de estado debajo del QR */
+.qr-status-badge {
+  display: none;
+  margin-top: 12px; text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .65rem; letter-spacing: .14em;
+  color: rgba(240,165,0,.7);
+}
+.qr-frame.has-image .qr-status-badge { display: block; }
 
-  .qr-info h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    margin-bottom: 14px;
-  }
-  .qr-info h2 span { color: var(--upeu-gold); }
-  .qr-info p { color: var(--upeu-gray); line-height: 1.7; max-width: 440px; margin-bottom: 24px; }
+.qr-info { flex: 1; min-width: 240px; }
+.qr-info h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 4.5vw, 3.1rem);
+  line-height: .97; margin-bottom: 16px;
+}
+.qr-info h2 .hl { color: var(--gold); }
+.qr-info p { color: var(--gray); line-height: 1.72; max-width: 420px; margin-bottom: 28px; font-size: .93rem; }
 
-  .download-btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: linear-gradient(135deg, var(--upeu-gold), var(--upeu-gold-lt));
-    color: var(--upeu-dark);
-    font-weight: 800; font-size: .95rem;
-    padding: 13px 28px; border-radius: 100px;
-    text-decoration: none;
-    transition: transform .2s, box-shadow .2s;
-    box-shadow: 0 4px 20px rgba(240,165,0,.35);
-  }
-  .download-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(240,165,0,.5); }
+.btn-download {
+  display: inline-flex; align-items: center; gap: 11px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-lt));
+  color: var(--darker); font-weight: 800; font-size: .97rem;
+  padding: 14px 32px; border-radius: 100px; text-decoration: none;
+  box-shadow: 0 4px 24px rgba(240,165,0,.32);
+  transition: transform .22s, box-shadow .22s;
+}
+.btn-download:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(240,165,0,.52); }
+.btn-download:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
 
-  /* ── VIDEOS ── */
-  .videos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 28px;
-  }
+/* ═══════════════════════════════════════════════════════════
+   VIDEOS VERTICALES
+   Clave: el wrapper usa aspect-ratio 9/16 para videos portrait.
+   object-fit: contain asegura que NO se recorte nada.
+═══════════════════════════════════════════════════════════ */
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 28px;
+}
 
-  .video-card {
-    background: rgba(255,255,255,.03);
-    border: 1px solid rgba(46,125,247,.18);
-    border-radius: var(--radius);
-    overflow: hidden;
-    transition: transform .3s, box-shadow .3s;
-  }
-  .video-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 24px 60px rgba(0,48,130,.35);
-  }
+.video-card {
+  background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(0,10,30,.65));
+  border: 1px solid rgba(46,125,247,.18);
+  border-radius: var(--radius); overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease, border-color .35s ease;
+  position: relative;
+}
+/* Shimmer de borde top en hover */
+.video-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--blue-lt), var(--cyan), var(--blue-lt), transparent);
+  opacity: 0;
+  transition: opacity .4s;
+  z-index: 3;
+}
+.video-card:hover::before { opacity: 1; }
+/* Glow ambient de fondo */
+.video-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: var(--radius);
+  box-shadow: inset 0 0 40px rgba(46,125,247,.06);
+  opacity: 0;
+  transition: opacity .4s;
+  pointer-events: none;
+  z-index: 0;
+}
+.video-card:hover::after { opacity: 1; }
+.video-card:hover {
+  transform: translateY(-10px) scale(1.012);
+  box-shadow:
+    0 32px 80px rgba(0,48,130,.38),
+    0 8px 24px rgba(46,125,247,.18),
+    0 0 0 1px rgba(46,125,247,.22);
+  border-color: rgba(46,125,247,.5);
+}
 
-  .video-wrapper {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%; /* 16:9 */
-    background: #000b1e;
-    overflow: hidden;
-  }
+/*
+  WRAPPER VERTICAL (9:16)
+  ────────────────────────────────────────────────────────
+  Videos grabados en portrait.
+  - aspect-ratio: 9/16  → proporciones correctas sin padding hack
+  - object-fit: contain → muestra TODO el video sin recortes ni zoom
+  - background negro    → franjas laterales apenas perceptibles
+  ────────────────────────────────────────────────────────
+*/
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  background: #000;
+  overflow: hidden;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
 
-  .video-wrapper iframe,
-  .video-wrapper video {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    border: none;
-  }
+/* Fallback navegadores sin aspect-ratio */
+@supports not (aspect-ratio: 9/16) {
+  .video-wrapper { padding-top: 177.78%; height: 0; }
+  .video-wrapper > * { position: absolute; inset: 0; }
+}
 
-  /* PLACEHOLDER when no video is set */
-  .video-placeholder {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 12px;
-    background: linear-gradient(145deg, #001a4a, #000d20);
-    cursor: pointer;
-    text-align: center; padding: 16px;
-  }
-  .video-placeholder .play-icon {
-    width: 64px; height: 64px;
-    border-radius: 50%;
-    background: rgba(46,125,247,.2);
-    border: 2px solid rgba(46,125,247,.5);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.6rem;
-    transition: background .3s, transform .3s;
-  }
-  .video-card:hover .play-icon { background: rgba(46,125,247,.5); transform: scale(1.1); }
-  .video-placeholder p { font-size: .85rem; color: var(--upeu-gray); max-width: 180px; }
+.video-wrapper video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;   /* NO recortar — mostrar video completo */
+  background: #000;
+  display: block;
+}
 
-  .video-body { padding: 20px 22px; }
-  .video-tag {
-    display: inline-block;
-    background: rgba(46,125,247,.15); border: 1px solid rgba(46,125,247,.3);
-    color: var(--accent-cyan);
-    font-size: .68rem; font-weight: 700; letter-spacing: .12em;
-    padding: 3px 10px; border-radius: 100px; text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .video-body h3 { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
-  .video-body p { font-size: .85rem; color: var(--upeu-gray); line-height: 1.55; }
+/*
+  Fullscreen: en pantalla completa también usamos contain
+  para no perder ningún pixel grabado.
+*/
+.video-wrapper video::-webkit-media-controls { border-radius: 0; }
+.video-wrapper video:-webkit-full-screen      { object-fit: contain; background: #000; }
+.video-wrapper video:-moz-full-screen         { object-fit: contain; background: #000; }
+.video-wrapper video:fullscreen               { object-fit: contain; background: #000; }
 
-  /* Input para pegar URL de video */
-  .video-url-input {
-    width: 100%; margin-top: 10px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(46,125,247,.3);
-    border-radius: 8px; padding: 8px 12px;
-    color: var(--upeu-white); font-size: .8rem;
-    font-family: 'Share Tech Mono', monospace;
-    outline: none; transition: border-color .2s;
-  }
-  .video-url-input:focus { border-color: var(--upeu-blue-lt); }
-  .video-url-input::placeholder { color: rgba(176,196,222,.5); }
+/* Placeholder animado cuando no hay video */
+.video-placeholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px;
+  background: linear-gradient(170deg, #001633 0%, #000c1f 100%);
+  z-index: 2; padding: 20px; text-align: center;
+  transition: opacity .3s;
+}
+.video-placeholder.hidden { display: none; }
 
-  .apply-btn {
-    margin-top: 8px;
-    background: linear-gradient(135deg, var(--upeu-blue-mid), var(--upeu-blue-lt));
-    color: #fff; border: none; border-radius: 8px;
-    padding: 8px 18px; font-size: .8rem; font-weight: 700;
-    cursor: pointer; transition: opacity .2s;
-    font-family: 'Exo 2', sans-serif;
-  }
-  .apply-btn:hover { opacity: .85; }
+.placeholder-ring {
+  width: 70px; height: 70px; border-radius: 50%;
+  background: rgba(46,125,247,.12);
+  border: 2px solid rgba(46,125,247,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  transition: background var(--t), transform var(--t), border-color var(--t);
+}
+.video-card:hover .placeholder-ring {
+  background: rgba(46,125,247,.28);
+  border-color: rgba(46,125,247,.7);
+  transform: scale(1.08);
+}
+.placeholder-label { font-size: .8rem; color: var(--gray); max-width: 160px; line-height: 1.5; }
 
-  /* ── REQUIREMENTS ── */
-  .req-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-  }
-  .req-item {
-    background: rgba(255,255,255,.03);
-    border: 1px solid rgba(46,125,247,.15);
-    border-radius: 12px; padding: 20px 22px;
-    display: flex; align-items: flex-start; gap: 14px;
-  }
-  .req-icon {
-    font-size: 1.5rem; flex-shrink: 0; margin-top: 2px;
-  }
-  .req-item h4 { font-weight: 700; font-size: .9rem; margin-bottom: 4px; }
-  .req-item p { font-size: .8rem; color: var(--upeu-gray); line-height: 1.5; }
+/* Overlay de brillo sutil en hover */
+.video-wrapper::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(0,48,130,.35) 100%);
+  pointer-events: none; opacity: 0;
+  transition: opacity .35s;
+}
+.video-card:hover .video-wrapper::after { opacity: 1; }
 
-  /* ── DIVIDER ── */
-  .divider {
-    width: 100%; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(46,125,247,.3), transparent);
-    margin: 0 auto;
-  }
+/* Cuerpo de la card */
+.video-body {
+  padding: 22px 24px 24px;
+  flex: 1; display: flex; flex-direction: column;
+}
+.video-tag {
+  display: inline-block;
+  background: rgba(46,125,247,.13); border: 1px solid rgba(46,125,247,.28);
+  color: var(--cyan); font-size: .66rem; font-weight: 700;
+  letter-spacing: .14em; padding: 3px 11px; border-radius: 100px;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.video-body h3 {
+  font-weight: 700; font-size: 1rem; margin-bottom: 8px; line-height: 1.35; color: var(--white);
+}
+.video-body p { font-size: .84rem; color: var(--gray); line-height: 1.6; flex: 1; }
 
-  /* ── FOOTER ── */
-  footer {
-    position: relative; z-index: 1;
-    padding: 40px 24px;
-    text-align: center;
-    border-top: 1px solid rgba(46,125,247,.15);
-  }
-  footer p { font-size: .85rem; color: var(--upeu-gray); }
-  footer strong { color: var(--upeu-gold); }
+/* ═══════════════════════════════════════════════════════════
+   CONTROLES ADMIN — ocultos en modo público
+═══════════════════════════════════════════════════════════ */
+.admin-controls {
+  display: none;
+  margin-top: 16px; padding-top: 16px;
+  border-top: 1px solid rgba(240,165,0,.18);
+}
+body.admin-mode .admin-controls { display: block; }
 
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: .5; transform: scale(.7); }
-  }
-  @keyframes scrollLine {
-    0% { transform: scaleY(0); transform-origin: top; }
-    50% { transform: scaleY(1); transform-origin: top; }
-    51% { transform: scaleY(1); transform-origin: bottom; }
-    100% { transform: scaleY(0); transform-origin: bottom; }
-  }
+.ac-label {
+  display: block; font-size: .7rem; color: var(--gold);
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: .1em; margin-bottom: 5px;
+}
+.ac-label + .ac-label { margin-top: 10px; }
 
-  /* Reveal on scroll */
-  .reveal {
-    opacity: 0; transform: translateY(30px);
-    transition: opacity .6s ease, transform .6s ease;
-  }
-  .reveal.visible { opacity: 1; transform: none; }
+.ac-input {
+  width: 100%;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(46,125,247,.28);
+  border-radius: 9px; padding: 8px 13px;
+  color: var(--white); font-size: .79rem;
+  font-family: 'Share Tech Mono', monospace;
+  outline: none; transition: border-color .2s, box-shadow .2s;
+}
+.ac-input:focus {
+  border-color: var(--blue-lt);
+  box-shadow: 0 0 0 3px rgba(46,125,247,.14);
+}
+.ac-input::placeholder { color: rgba(176,196,222,.4); }
 
-  /* ── MOBILE ── */
-  @media (max-width: 640px) {
-    .qr-section { flex-direction: column; padding: 32px 24px; }
-    .qr-placeholder { width: 160px; height: 160px; }
-  }
+.ac-btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+.ac-btn {
+  background: linear-gradient(135deg, var(--blue-mid), var(--blue-lt));
+  color: #fff; border: none; border-radius: 9px;
+  padding: 8px 18px; font-size: .78rem; font-weight: 700;
+  font-family: 'Exo 2', sans-serif; cursor: pointer;
+  transition: opacity .2s, transform .2s;
+}
+.ac-btn:hover { opacity: .84; transform: translateY(-1px); }
+.ac-btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+.ac-btn-danger {
+  background: rgba(200,40,40,.14);
+  border: 1px solid rgba(200,40,40,.38); color: #ff7272;
+  border-radius: 9px; padding: 8px 14px;
+  font-size: .78rem; font-weight: 700;
+  font-family: 'Exo 2', sans-serif; cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+.ac-btn-danger:hover { background: rgba(200,40,40,.28); transform: translateY(-1px); }
+
+/* Botón "agregar video" — solo admin */
+#add-video-wrap { display: none; margin-top: 36px; text-align: center; }
+body.admin-mode #add-video-wrap { display: block; }
+
+.btn-add-video {
+  background: rgba(46,125,247,.1);
+  border: 1px dashed rgba(46,125,247,.45); color: var(--cyan);
+  border-radius: 100px; padding: 12px 32px;
+  font-size: .88rem; font-weight: 700; font-family: 'Exo 2', sans-serif;
+  cursor: pointer; transition: background .25s, border-color .25s;
+}
+.btn-add-video:hover { background: rgba(46,125,247,.18); border-color: rgba(46,125,247,.7); }
+
+/* ═══════════════════════════════════════════════════════════
+   SECCIÓN AYUDA
+═══════════════════════════════════════════════════════════ */
+.help-actions {
+  display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+  margin-top: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════════ */
+footer {
+  position: relative; z-index: 1;
+  padding: 44px 28px; text-align: center;
+  border-top: 1px solid rgba(46,125,247,.13);
+}
+footer p { font-size: .84rem; color: var(--gray); }
+footer strong { color: var(--gold); }
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; z-index: 9999;
+  transform: translateX(-50%) translateY(70px);
+  background: rgba(0,30,80,.97);
+  border: 1px solid var(--blue-lt); color: var(--white);
+  font-size: .84rem; padding: 12px 26px; border-radius: 100px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.55);
+  opacity: 0; pointer-events: none; white-space: nowrap;
+  transition: transform .38s cubic-bezier(.34,1.56,.64,1), opacity .38s;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ═══════════════════════════════════════════════════════════
+   ANIMACIONES
+═══════════════════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(26px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .45; transform: scale(.65); }
+}
+@keyframes scrollLine {
+  0%   { transform: scaleY(0); transform-origin: top; }
+  50%  { transform: scaleY(1); transform-origin: top; }
+  51%  { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(28px); }
+}
+
+/* Reveal al hacer scroll */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════ */
+/* Desktop grande → 3 columnas de video */
+@media (min-width: 1200px) {
+  .videos-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 1199px) and (min-width: 861px) {
+  .videos-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Tablet */
+@media (max-width: 860px) {
+  .qr-section   { gap: 40px; padding: 40px 32px; }
+  .videos-grid  { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Móvil */
+@media (max-width: 640px) {
+  .section { padding: 60px 18px; }
+  .section-title { margin-bottom: 36px; }
+  .qr-section   { flex-direction: column; padding: 32px 22px; gap: 32px; }
+  .qr-frame     { width: 220px; height: 220px; align-self: center; }
+  .videos-grid  { grid-template-columns: 1fr; }
+  .steps-grid   { grid-template-columns: 1fr; }
+  .req-grid     { grid-template-columns: 1fr; }
+  #admin-bar .admin-bar-hint { display: none; }
+  .hero h1 { font-size: clamp(2.8rem, 14vw, 5rem); }
+  .hero-actions { flex-direction: column; align-items: center; }
+}
 </style>
 </head>
 <body>
 
+<!-- ══════════════ ADMIN BAR ══════════════ -->
+<div id="admin-bar" role="banner" aria-label="Panel de administrador">
+  <div class="admin-bar-badge">
+    <span class="ab-dot" aria-hidden="true"></span>
+    MODO ADMINISTRADOR ACTIVO
+  </div>
+  <span class="admin-bar-hint">Los cambios se guardan en localStorage automáticamente</span>
+  <button class="admin-bar-btn" onclick="App.saveAll()" aria-label="Guardar todos los cambios">
+    💾 Guardar todo
+  </button>
+</div>
+
 <!-- ══════════════ HERO ══════════════ -->
-<section class="hero">
-  <div class="hero-grid-bg"></div>
-  <div class="hero-badge"><span></span>Universidad Peruana Unión · Escuela de Posgrado</div>
-  <h1>Guía de<br><span>Instalación</span><br>UPeU Events</h1>
+<section class="hero" aria-label="Encabezado principal">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
+
+  <div class="hero-badge">
+    <span class="pdot" aria-hidden="true"></span>
+    Universidad Peruana Unión · Escuela de Posgrado
+  </div>
+
+  <h1>Guía de<br><span class="hl">Instalación</span><br>UPeU Events</h1>
+
   <p class="hero-sub">
-    Instala la aplicación oficial de eventos de la UPeU en tu dispositivo Android en tres pasos simples. Sigue los tutoriales en video para una experiencia sin complicaciones.
+    Instala la aplicación oficial de eventos de la UPeU en tu Android en tres pasos simples.
+    Sigue los tutoriales en video para una experiencia rápida y sin complicaciones.
   </p>
-  <a href="#pasos" class="hero-cta">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-    Ver pasos de instalación
-  </a>
-  <div class="hero-scroll">SCROLL</div>
+
+  <div class="hero-actions">
+    <a href="#pasos" class="btn-primary" aria-label="Ver pasos de instalación">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      Ver pasos de instalación
+    </a>
+    <a href="#tutoriales" class="btn-ghost" aria-label="Ver tutoriales en video">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Ver tutoriales
+    </a>
+  </div>
+
+  <div class="hero-scroll" aria-hidden="true">SCROLL</div>
 </section>
 
 <!-- ══════════════ REQUISITOS ══════════════ -->
-<div class="divider" style="max-width:1100px;margin:0 auto;"></div>
-<div class="section reveal" id="requisitos">
-  <div class="section-label">// Antes de comenzar</div>
-  <h2 class="section-title">Requisitos previos</h2>
-  <div class="req-list">
-    <div class="req-item">
-      <div class="req-icon">📱</div>
+<div class="divider" role="separator"></div>
+<section class="section reveal" id="requisitos" aria-labelledby="req-h">
+  <div class="section-label" aria-hidden="true">// Antes de comenzar</div>
+  <h2 class="section-title" id="req-h">Requisitos<br>previos</h2>
+  <div class="req-grid" role="list">
+
+    <div class="req-card" role="listitem">
+      <div class="req-icon" aria-hidden="true">📱</div>
       <div>
         <h4>Android 6.0 o superior</h4>
-        <p>El APK requiere Android Marshmallow (6.0) como versión mínima.</p>
+        <p>El APK requiere Android Marshmallow (6.0) como versión mínima del sistema operativo.</p>
       </div>
     </div>
-    <div class="req-item">
-      <div class="req-icon">⚙️</div>
+
+    <div class="req-card" role="listitem">
+      <div class="req-icon" aria-hidden="true">⚙️</div>
       <div>
-        <h4>Fuentes desconocidas</h4>
-        <p>Debes permitir la instalación desde fuentes externas en Ajustes → Seguridad.</p>
+        <h4>Fuentes desconocidas activas</h4>
+        <p>Habilita la instalación desde fuentes externas en Ajustes → Seguridad → Fuentes desconocidas.</p>
       </div>
     </div>
-    <div class="req-item">
-      <div class="req-icon">📶</div>
+
+    <div class="req-card" role="listitem">
+      <div class="req-icon" aria-hidden="true">📶</div>
       <div>
         <h4>Conexión a internet</h4>
-        <p>Necesitas Wi-Fi o datos móviles para descargar el archivo APK (~85 MB).</p>
+        <p>Necesitas Wi-Fi o datos móviles activos para descargar el archivo APK (~85 MB).</p>
       </div>
     </div>
-    <div class="req-item">
-      <div class="req-icon">💾</div>
+
+    <div class="req-card" role="listitem">
+      <div class="req-icon" aria-hidden="true">💾</div>
       <div>
-        <h4>Espacio libre: 200 MB</h4>
-        <p>Asegúrate de tener al menos 200 MB libres en el almacenamiento interno.</p>
+        <h4>200 MB de espacio libre</h4>
+        <p>Verifica que tienes al menos 200 MB disponibles en el almacenamiento interno del dispositivo.</p>
       </div>
     </div>
+
   </div>
-</div>
+</section>
 
 <!-- ══════════════ PASOS ══════════════ -->
-<div class="divider" style="max-width:1100px;margin:0 auto;"></div>
-<div class="section reveal" id="pasos">
-  <div class="section-label">// Instalación paso a paso</div>
-  <h2 class="section-title">Tres pasos<br>para instalar</h2>
+<div class="divider" role="separator"></div>
+<section class="section reveal" id="pasos" aria-labelledby="pasos-h">
+  <div class="section-label" aria-hidden="true">// Instalación paso a paso</div>
+  <h2 class="section-title" id="pasos-h">Tres pasos<br>para instalar</h2>
   <div class="steps-grid">
 
-    <div class="step-card">
-      <div class="step-icon">📷</div>
-      <div class="step-number">1</div>
+    <article class="step-card" data-n="1">
+      <span class="step-icon" aria-hidden="true">📷</span>
+      <div class="step-num" aria-label="Paso 1">1</div>
       <h3>Escanea el código QR</h3>
-      <p>Abre la cámara de tu teléfono o una app lectora de QR y apunta al código que aparece abajo. Serás redirigido automáticamente al enlace de descarga oficial.</p>
-    </div>
+      <p>Abre la cámara de tu Android o una app lectora de QR, apunta al código y accede directamente al enlace oficial de descarga.</p>
+    </article>
 
-    <div class="step-card">
-      <div class="step-icon">📥</div>
-      <div class="step-number">2</div>
+    <article class="step-card" data-n="2">
+      <span class="step-icon" aria-hidden="true">📥</span>
+      <div class="step-num" aria-label="Paso 2">2</div>
       <h3>Descarga el APK</h3>
-      <p>En la página de MediaFire, pulsa el botón de descarga. El archivo <strong style="color:var(--accent-cyan)">UPeUEvents.apk</strong> (~85 MB) se guardará en tu carpeta de Descargas automáticamente.</p>
-    </div>
+      <p>Pulsa el botón de descarga en la página de destino. El archivo <strong style="color:var(--cyan)">UPeUEvents.apk</strong> (~85 MB) se guardará automáticamente en tu carpeta Descargas.</p>
+    </article>
 
-    <div class="step-card">
-      <div class="step-icon">🗂️</div>
-      <div class="step-number">3</div>
+    <article class="step-card" data-n="3">
+      <span class="step-icon" aria-hidden="true">🗂️</span>
+      <div class="step-num" aria-label="Paso 3">3</div>
       <h3>Instala desde Descargas</h3>
-      <p>Abre tu <strong style="color:var(--accent-cyan)">Administrador de Archivos</strong>, ve a Descargas, toca el archivo APK y selecciona <em>Instalar</em>. Acepta los permisos que solicite la app.</p>
-    </div>
+      <p>Abre el <strong style="color:var(--cyan)">Administrador de Archivos</strong>, localiza el APK en Descargas, tócalo y selecciona <em>Instalar</em>. Acepta los permisos requeridos.</p>
+    </article>
 
   </div>
-</div>
+</section>
 
 <!-- ══════════════ QR + DESCARGA ══════════════ -->
-<div class="section reveal">
+<div class="divider" role="separator"></div>
+<section class="section reveal" id="descarga" aria-labelledby="qr-h">
   <div class="qr-section">
-    <!-- Reemplaza la src con el QR real si lo tienes como imagen -->
-    <div class="qr-placeholder" id="qr-box">
-      <img src="" alt="QR Code" id="qr-img" style="display:none;">
-      <span id="qr-label" style="color:#333;font-size:.78rem;line-height:1.4;">
-        📌 Pega aquí tu imagen QR<br>usando el campo de abajo
-      </span>
+
+    <!-- QR Frame — muestra la imagen configurada -->
+    <div class="qr-frame" id="qr-frame" aria-label="Código QR de descarga">
+      <div class="qr-ring" aria-hidden="true"></div>
+      <div class="qr-corner qr-corner-tl" aria-hidden="true"></div>
+      <div class="qr-corner qr-corner-tr" aria-hidden="true"></div>
+      <div class="qr-corner qr-corner-bl" aria-hidden="true"></div>
+      <div class="qr-corner qr-corner-br" aria-hidden="true"></div>
+      <div class="qr-frame-inner">
+        <img id="qr-img-el" src="" alt="Código QR UPeU Events" style="display:none;" loading="lazy">
+        <span id="qr-placeholder-text" aria-live="polite">Configura el QR<br>desde el panel admin</span>
+      </div>
+      <div class="qr-status-badge">◉ QR ACTIVO</div>
     </div>
+
     <div class="qr-info">
-      <h2>Descarga<br><span>UPeU Events</span></h2>
-      <p>
-        Escanea el código QR con la cámara de tu Android o haz clic en el botón de descarga directa. La aplicación es 100% oficial de la <strong style="color:var(--upeu-white)">Universidad Peruana Unión</strong>.
-      </p>
-      <a href="#" class="download-btn" id="download-link" onclick="return false;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <h2 id="qr-h">Descarga<br><span class="hl">UPeU Events</span></h2>
+      <p>Escanea el código QR con la cámara de tu Android o usa el botón de descarga directa. Aplicación 100% oficial de la <strong style="color:var(--white)">Universidad Peruana Unión</strong>.</p>
+
+      <a href="#" id="download-link" class="btn-download" aria-label="Descargar APK de UPeU Events">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
         Descargar APK
       </a>
-      <div style="margin-top:18px;">
-        <label style="font-size:.78rem;color:var(--upeu-gray);display:block;margin-bottom:6px;">🔗 URL de descarga directa:</label>
-        <input type="text" id="download-url" class="video-url-input" placeholder="https://www.mediafire.com/file/..." style="margin-top:0;">
-        <button class="apply-btn" onclick="setDownloadLink()">Aplicar enlace</button>
+
+      <!-- Controles admin -->
+      <div class="admin-controls" aria-label="Controles admin – Descarga y QR">
+        <div style="margin-top:18px;">
+          <span class="ac-label">🔗 URL de descarga directa (APK):</span>
+          <input type="url" id="download-url-input" class="ac-input"
+            placeholder="https://www.mediafire.com/file/..."
+            aria-label="URL del APK">
+          <div class="ac-btn-row">
+            <button class="ac-btn" onclick="App.setDownloadLink()">Aplicar enlace</button>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <span class="ac-label">🖼️ Ruta de imagen QR:</span>
+          <input type="text" id="qr-url-input" class="ac-input"
+            placeholder="images/qr-descarga.png"
+            aria-label="Ruta de la imagen QR"
+            oninput="App.previewQR(this.value)"
+            onkeydown="if(event.key==='Enter') App.setQR()">
+          <div class="ac-btn-row">
+            <button class="ac-btn" onclick="App.setQR()">Aplicar QR</button>
+            <button class="ac-btn-danger" onclick="App.clearQR()">Quitar QR</button>
+          </div>
+        </div>
       </div>
-      <div style="margin-top:14px;">
-        <label style="font-size:.78rem;color:var(--upeu-gray);display:block;margin-bottom:6px;">🖼️ URL de imagen QR (opcional):</label>
-        <input type="text" id="qr-url" class="video-url-input" placeholder="https://..." style="margin-top:0;">
-        <button class="apply-btn" onclick="setQR()">Mostrar QR</button>
-      </div>
+
     </div>
   </div>
-</div>
+</section>
 
-<!-- ══════════════ VIDEOS ══════════════ -->
-<div class="divider" style="max-width:1100px;margin:0 auto;"></div>
-<div class="section reveal" id="tutoriales">
-  <div class="section-label">// Tutoriales en video</div>
-  <h2 class="section-title">Aprende con<br>nuestros videos</h2>
-  <div class="videos-grid" id="videos-container">
+<!-- ══════════════ VIDEOS / TUTORIALES ══════════════ -->
+<div class="divider" role="separator"></div>
+<section class="section reveal" id="tutoriales" aria-labelledby="videos-h">
+  <div class="section-label" aria-hidden="true">// Tutoriales en video</div>
+  <h2 class="section-title" id="videos-h">Aprende con<br>nuestros videos</h2>
 
-    <!-- VIDEO 1 -->
-    <div class="video-card">
-      <div class="video-wrapper">
-        <div class="video-placeholder" id="ph-1">
-          <div class="play-icon">▶</div>
-          <p>Tutorial: Instalación desde cero en Android</p>
-        </div>
-        <iframe id="frame-1" style="display:none;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-      </div>
-      <div class="video-body">
-        <span class="video-tag">Tutorial 1</span>
-        <h3>Instalación completa paso a paso</h3>
-        <p>Aprende a descargar e instalar UPeU Events desde cero en cualquier dispositivo Android.</p>
-        <input type="text" class="video-url-input" placeholder="Pega URL de YouTube o video (ej: https://youtu.be/...)" onchange="setVideo('1', this.value)">
-        <button class="apply-btn" onclick="setVideo('1', document.querySelector('#frame-1').previousSibling.previousSibling.querySelector('input').value || this.previousSibling.value)">Cargar video</button>
-      </div>
-    </div>
+  <!-- Cards generadas por JS (Videos.renderAll) -->
+  <div class="videos-grid" id="videos-container" aria-label="Tutoriales en video"></div>
 
-    <!-- VIDEO 2 -->
-    <div class="video-card">
-      <div class="video-wrapper">
-        <div class="video-placeholder" id="ph-2">
-          <div class="play-icon">▶</div>
-          <p>Tutorial: Habilitar fuentes desconocidas</p>
-        </div>
-        <iframe id="frame-2" style="display:none;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-      </div>
-      <div class="video-body">
-        <span class="video-tag">Tutorial 2</span>
-        <h3>Activar instalación de fuentes externas</h3>
-        <p>Configura tu Android para permitir la instalación de APKs fuera de la Play Store.</p>
-        <input type="text" class="video-url-input" placeholder="Pega URL de YouTube o video" onchange="">
-        <button class="apply-btn" onclick="setVideoFromBtn(this, '2')">Cargar video</button>
-      </div>
-    </div>
-
-    <!-- VIDEO 3 -->
-    <div class="video-card">
-      <div class="video-wrapper">
-        <div class="video-placeholder" id="ph-3">
-          <div class="play-icon">▶</div>
-          <p>Tutorial: Registro y primeros pasos en la app</p>
-        </div>
-        <iframe id="frame-3" style="display:none;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-      </div>
-      <div class="video-body">
-        <span class="video-tag">Tutorial 3</span>
-        <h3>Registro y uso de UPeU Events</h3>
-        <p>Cómo registrarte, explorar eventos y gestionar tus inscripciones dentro de la aplicación.</p>
-        <input type="text" class="video-url-input" placeholder="Pega URL de YouTube o video" onchange="">
-        <button class="apply-btn" onclick="setVideoFromBtn(this, '3')">Cargar video</button>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Botón agregar nuevo video -->
-  <div style="margin-top:32px;text-align:center;">
-    <button class="apply-btn" style="padding:12px 28px;font-size:.9rem;border-radius:100px;" onclick="addVideoCard()">
-      + Agregar otro video tutorial
+  <!-- Agregar video — solo admin -->
+  <div id="add-video-wrap">
+    <button class="btn-add-video" onclick="App.addVideo()" aria-label="Agregar nuevo tutorial">
+      + Agregar video tutorial
     </button>
   </div>
-</div>
+</section>
 
 <!-- ══════════════ AYUDA ══════════════ -->
-<div class="divider" style="max-width:1100px;margin:0 auto;"></div>
-<div class="section reveal" id="ayuda" style="text-align:center;">
-  <div class="section-label">// ¿Problemas?</div>
-  <h2 class="section-title">¿Necesitas ayuda?</h2>
-  <p style="color:var(--upeu-gray);max-width:520px;margin:0 auto 36px;line-height:1.7;">
-    Si tienes inconvenientes durante la instalación, revisa los videos tutoriales o comunícate con la Escuela de Posgrado de la UPeU.
+<div class="divider" role="separator"></div>
+<section class="section reveal" id="ayuda" style="text-align:center;" aria-labelledby="ayuda-h">
+  <div class="section-label" aria-hidden="true">// ¿Problemas?</div>
+  <h2 class="section-title" id="ayuda-h">¿Necesitas ayuda?</h2>
+  <p style="color:var(--gray);max-width:500px;margin:0 auto 40px;line-height:1.75;font-size:.95rem;">
+    Si encuentras inconvenientes durante la instalación, revisa los videos tutoriales o comunícate directamente con la Escuela de Posgrado de la UPeU.
   </p>
-  <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;">
-    <a href="https://posgrado.upeu.edu.pe" target="_blank" class="hero-cta" style="font-size:.9rem;padding:12px 26px;">
+  <div class="help-actions">
+    <a href="https://posgrado.upeu.edu.pe" target="_blank" rel="noopener noreferrer"
+       class="btn-primary" style="font-size:.9rem;padding:13px 28px;"
+       aria-label="Visitar web oficial (abre en nueva pestaña)">
       🌐 Visitar web oficial
     </a>
-    <a href="mailto:posgrado@upeu.edu.pe" class="download-btn" style="font-size:.9rem;padding:12px 26px;">
+    <a href="mailto:posgrado@upeu.edu.pe"
+       class="btn-download" style="font-size:.9rem;padding:13px 28px;"
+       aria-label="Enviar correo a soporte">
       ✉️ Contactar soporte
     </a>
   </div>
-</div>
+</section>
 
 <!-- ══════════════ FOOTER ══════════════ -->
 <footer>
   <p>© 2025 <strong>Universidad Peruana Unión</strong> · Escuela de Posgrado · UPeU Events</p>
-  <p style="margin-top:6px;font-size:.75rem;">Todos los derechos reservados.</p>
+  <p style="margin-top:6px;font-size:.76rem;">Todos los derechos reservados.</p>
 </footer>
 
-<!-- ══════════════ JS ══════════════ -->
+<!-- Toast global -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     JAVASCRIPT MODULAR
+     ─────────────────────────────────────────────────────────
+     Módulos:
+       Config      — constantes, videos default, storage key
+       Storage     — persistencia localStorage
+       AdminMode   — detección URL ?admin=true o FORCE_ADMIN
+       Videos      — CRUD y renderizado de cards
+       QR          — imagen QR
+       Download    — enlace de descarga APK
+       UI          — toast, scroll reveal
+       App         — init + API pública (llamada desde HTML)
+═══════════════════════════════════════════════════════════ -->
 <script>
-// ── Scroll reveal
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+/* ──────────────────────────────────────────────────────────
+   CONFIG
+────────────────────────────────────────────────────────── */
+const Config = {
+  /**
+   * Pon true aquí para forzar modo admin sin tocar la URL.
+   * Útil durante desarrollo. En producción debe ser false.
+   */
+  FORCE_ADMIN: false,
 
-// ── YouTube URL → embed
-function toEmbedURL(url) {
-  url = url.trim();
-  // youtu.be/ID
-  let m = url.match(/youtu\.be\/([^?&]+)/);
-  if (m) return `https://www.youtube.com/embed/${m[1]}`;
-  // youtube.com/watch?v=ID
-  m = url.match(/[?&]v=([^&]+)/);
-  if (m) return `https://www.youtube.com/embed/${m[1]}`;
-  // youtube.com/embed/... already
-  if (url.includes('youtube.com/embed/')) return url;
-  // Direct video file or other
-  return url;
-}
+  STORAGE_KEY: 'upeu_guide_v2',
 
-function setVideo(id, url) {
-  if (!url || !url.trim()) return;
-  const embed = toEmbedURL(url);
-  const frame = document.getElementById('frame-' + id);
-  const ph = document.getElementById('ph-' + id);
-  frame.src = embed;
-  frame.style.display = 'block';
-  if (ph) ph.style.display = 'none';
-}
+  /**
+   * Videos por defecto.
+   * src → archivo MP4 local dentro de /videos/
+   * Las descripciones están alineadas con los títulos y
+   * usan lenguaje tecnológico/profesional.
+   */
+  DEFAULT_VIDEOS: [
+    {
+      id: 1,
+      tag: 'Rol Administrador',
+      title: 'Tutorial Administrador',
+      desc: 'Aprende a gestionar completamente la plataforma, administrar eventos, usuarios y configuraciones principales del sistema.',
+      src: 'videos/tutorial1.mp4',
+      placeholderText: 'Tutorial Rol Administrador'
+    },
+    {
+      id: 2,
+      tag: 'Rol Estudiante',
+      title: 'Tutorial Estudiante',
+      desc: 'Descubre cómo registrarte, participar en eventos y acceder a todas las funcionalidades disponibles para estudiantes.',
+      src: 'videos/tutorial2.mp4',
+      placeholderText: 'Tutorial Rol Estudiante'
+    },
+    {
+      id: 3,
+      tag: 'Rol Jurado',
+      title: 'Tutorial Jurado',
+      desc: 'Conoce el proceso de evaluación de proyectos, revisión de participantes y gestión de calificaciones dentro del sistema.',
+      src: 'videos/tutorial3.mp4',
+      placeholderText: 'Tutorial Rol Jurado'
+    },
+    {
+      id: 4,
+      tag: 'Rol SOCIES',
+      title: 'Tutorial SOCIES',
+      desc: 'Aprende a supervisar actividades, monitorear eventos y administrar funciones específicas del rol SOCIES en la plataforma.',
+      src: 'videos/tutorial4.mp4',
+      placeholderText: 'Tutorial Rol SOCIES'
+    }
+  ],
 
-function setVideoFromBtn(btn, id) {
-  const input = btn.previousElementSibling;
-  setVideo(id, input.value);
-}
+  DEFAULT_META: { downloadUrl: '', qrUrl: '' }
+};
 
-// ── Download link
-function setDownloadLink() {
-  const url = document.getElementById('download-url').value.trim();
-  if (!url) return;
-  const link = document.getElementById('download-link');
-  link.href = url;
-  link.onclick = null;
-  link.style.boxShadow = '0 8px 30px rgba(240,165,0,.6)';
-}
+/* ──────────────────────────────────────────────────────────
+   STORAGE — localStorage con manejo de errores
+────────────────────────────────────────────────────────── */
+const Storage = {
+  load() {
+    try {
+      const raw = localStorage.getItem(Config.STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      console.warn('[Storage] load error:', e);
+      return null;
+    }
+  },
+  save(data) {
+    try {
+      localStorage.setItem(Config.STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.warn('[Storage] save error:', e);
+    }
+  },
+  clear() { localStorage.removeItem(Config.STORAGE_KEY); }
+};
 
-// ── QR image
-function setQR() {
-  const url = document.getElementById('qr-url').value.trim();
-  if (!url) return;
-  const img = document.getElementById('qr-img');
-  const lbl = document.getElementById('qr-label');
-  img.src = url;
-  img.style.display = 'block';
-  lbl.style.display = 'none';
-}
+/* ──────────────────────────────────────────────────────────
+   ADMIN MODE
+────────────────────────────────────────────────────────── */
+const AdminMode = {
+  active: false,
+  detect() {
+    if (Config.FORCE_ADMIN) { this.active = true; return; }
+    this.active = new URLSearchParams(window.location.search).get('admin') === 'true';
+  },
+  apply() {
+    document.body.classList.toggle('admin-mode', this.active);
+  }
+};
 
-// ── Add video card
-let videoCount = 3;
-function addVideoCard() {
-  videoCount++;
-  const id = videoCount;
-  const container = document.getElementById('videos-container');
-  const card = document.createElement('div');
-  card.className = 'video-card';
-  card.innerHTML = `
-    <div class="video-wrapper">
-      <div class="video-placeholder" id="ph-${id}">
-        <div class="play-icon">▶</div>
-        <p>Nuevo tutorial</p>
+/* ──────────────────────────────────────────────────────────
+   VIDEOS — CRUD + renderizado
+────────────────────────────────────────────────────────── */
+const Videos = {
+  list: [],
+  _nextId: 5,
+
+  init(saved) {
+    this.list = (saved && saved.length)
+      ? saved
+      : JSON.parse(JSON.stringify(Config.DEFAULT_VIDEOS));
+    const maxId = this.list.reduce((m, v) => Math.max(m, v.id), 0);
+    this._nextId = maxId + 1;
+  },
+
+  renderAll() {
+    const c = document.getElementById('videos-container');
+    c.innerHTML = '';
+    this.list.forEach(v => c.appendChild(this._buildCard(v)));
+  },
+
+  updateSrc(id, newSrc) {
+    const v = this._find(id);
+    if (!v) return;
+    const src = (newSrc || '').trim();
+    if (!src) { UI.toast('⚠ Ingresa una ruta válida'); return; }
+    v.src = src;
+    this._replaceCard(id);
+    Storage.save(App.getState());
+    UI.toast('✅ Video actualizado');
+  },
+
+  updateTitle(id, newTitle) {
+    const v = this._find(id);
+    if (!v) return;
+    v.title = newTitle || v.title;
+    const el = document.querySelector(`#vc-${id} .video-card-title`);
+    if (el) el.textContent = v.title;
+    Storage.save(App.getState());
+  },
+
+  add() {
+    const id = this._nextId++;
+    const nv = {
+      id, tag: `Tutorial 0${id}`,
+      title: 'Nuevo tutorial',
+      desc: 'Descripción del nuevo tutorial.',
+      src: `videos/tutorial${id}.mp4`,
+      placeholderText: 'Nuevo tutorial'
+    };
+    this.list.push(nv);
+    document.getElementById('videos-container').appendChild(this._buildCard(nv));
+    Storage.save(App.getState());
+    document.getElementById(`vc-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    UI.toast('➕ Video agregado');
+  },
+
+  remove(id) {
+    this.list = this.list.filter(v => v.id !== id);
+    document.getElementById(`vc-${id}`)?.remove();
+    Storage.save(App.getState());
+    UI.toast('🗑 Video eliminado');
+  },
+
+  _replaceCard(id) {
+    const v = this._find(id);
+    const old = document.getElementById(`vc-${id}`);
+    if (v && old) old.replaceWith(this._buildCard(v));
+  },
+
+  /**
+   * Construye un article completo de video con:
+   *  - <video> vertical (aspect-ratio 9/16, object-fit:contain)
+   *  - preload="metadata" para carga eficiente
+   *  - placeholder visible hasta que el video esté disponible
+   *  - controles de admin (ocultos en modo público por CSS)
+   */
+  _buildCard(v) {
+    const hasSrc = !!(v.src && v.src.trim());
+    const card = document.createElement('article');
+    card.className = 'video-card';
+    card.id = `vc-${v.id}`;
+    card.setAttribute('aria-label', `Tutorial: ${v.title}`);
+
+    card.innerHTML = `
+      <div class="video-wrapper">
+        <div class="video-placeholder${hasSrc ? ' hidden' : ''}" id="ph-${v.id}">
+          <div class="placeholder-ring" aria-hidden="true">▶</div>
+          <span class="placeholder-label">${v.placeholderText}</span>
+        </div>
+        <!--
+          VIDEO VERTICAL MP4
+          ══════════════════════════════════════
+          aspect-ratio 9/16 definido en CSS → portrait nativo
+          object-fit: contain               → sin recortes
+          preload="metadata"                → solo carga metadatos al inicio
+                                              (dimensiones, duración)
+          El src se asigna en <source> para
+          permitir sustitución dinámica.
+          ══════════════════════════════════════
+        -->
+        <video
+          id="vid-${v.id}"
+          controls
+          preload="metadata"
+          aria-label="${v.title}"
+          style="${hasSrc ? '' : 'display:none;'}"
+        >${hasSrc ? `<source src="${v.src}" type="video/mp4">` : ''}
+          Tu navegador no soporta la reproducción de video HTML5.
+        </video>
       </div>
-      <iframe id="frame-${id}" style="display:none;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-    </div>
-    <div class="video-body">
-      <span class="video-tag">Tutorial ${id}</span>
-      <input type="text" class="video-url-input" placeholder="Título del video" style="margin-bottom:8px;margin-top:0;" oninput="document.getElementById('title-${id}').textContent = this.value || 'Nuevo tutorial'">
-      <h3 id="title-${id}">Nuevo tutorial</h3>
-      <input type="text" class="video-url-input" id="url-input-${id}" placeholder="Pega URL de YouTube o video">
-      <button class="apply-btn" onclick="setVideo('${id}', document.getElementById('url-input-${id}').value)">Cargar video</button>
-    </div>`;
-  container.appendChild(card);
-  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      <div class="video-body">
+        <span class="video-tag">${v.tag}</span>
+        <h3 class="video-card-title">${v.title}</h3>
+        <p>${v.desc}</p>
+
+        <div class="admin-controls" aria-label="Editar tutorial ${v.id}">
+          <span class="ac-label">📂 Ruta del archivo MP4:</span>
+          <input type="text" id="src-input-${v.id}" class="ac-input"
+            value="${v.src}" placeholder="videos/tutorial${v.id}.mp4"
+            aria-label="Ruta MP4"
+            onkeydown="if(event.key==='Enter') App.applyVideoSrc(${v.id})">
+
+          <span class="ac-label" style="margin-top:10px;">✏️ Título del tutorial:</span>
+          <input type="text" id="title-input-${v.id}" class="ac-input"
+            value="${v.title}" placeholder="Título"
+            aria-label="Título del tutorial"
+            oninput="Videos.updateTitle(${v.id}, this.value)">
+
+          <div class="ac-btn-row">
+            <button class="ac-btn" onclick="App.applyVideoSrc(${v.id})">Aplicar ruta</button>
+            <button class="ac-btn-danger" onclick="App.removeVideo(${v.id})">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    `;
+    return card;
+  },
+
+  _find(id) { return this.list.find(v => v.id === id) || null; }
+};
+
+/* ──────────────────────────────────────────────────────────
+   QR — sistema dinámico equivalente al de videos
+────────────────────────────────────────────────────────── */
+const QR = {
+  /** Aplica la ruta/URL y guarda en storage (igual que Videos.updateSrc) */
+  setImage(url) {
+    const u = (url || '').trim();
+    if (!u) { UI.toast('⚠ Ingresa una ruta de imagen válida'); return; }
+    this._apply(u);
+    Storage.save(App.getState());
+    UI.toast('✅ QR actualizado');
+  },
+
+  /** Restaura desde storage al cargar la página */
+  restore(url) {
+    if (url) {
+      this._apply(url);
+      const inp = document.getElementById('qr-url-input');
+      if (inp) inp.value = url;
+    }
+  },
+
+  /** Preview inmediata mientras se escribe (sin guardar aún) */
+  preview(url) {
+    const u = (url || '').trim();
+    if (!u) return;
+    const img = document.getElementById('qr-img-el');
+    const ph  = document.getElementById('qr-placeholder-text');
+    const frame = document.getElementById('qr-frame');
+    if (!img) return;
+    // Muestra preview sin guardar
+    img.src = u;
+    img.style.display = 'block';
+    if (ph) ph.style.display = 'none';
+    if (frame) frame.classList.add('has-image');
+  },
+
+  /** Elimina el QR y limpia el campo */
+  clear() {
+    const img = document.getElementById('qr-img-el');
+    const ph  = document.getElementById('qr-placeholder-text');
+    const frame = document.getElementById('qr-frame');
+    const inp = document.getElementById('qr-url-input');
+    if (img) { img.src = ''; img.style.display = 'none'; }
+    if (ph) ph.style.display = '';
+    if (frame) frame.classList.remove('has-image');
+    if (inp) inp.value = '';
+    Storage.save(App.getState());
+    UI.toast('🗑 QR eliminado');
+  },
+
+  /** Aplicación real — actualiza DOM y marca frame */
+  _apply(url) {
+    const img = document.getElementById('qr-img-el');
+    const ph  = document.getElementById('qr-placeholder-text');
+    const frame = document.getElementById('qr-frame');
+    if (!img) return;
+    img.src = url;
+    img.style.display = 'block';
+    if (ph) ph.style.display = 'none';
+    if (frame) frame.classList.add('has-image');
+  }
+};
+
+/* ──────────────────────────────────────────────────────────
+   DOWNLOAD
+────────────────────────────────────────────────────────── */
+const Download = {
+  setLink(url) {
+    const u = (url || '').trim();
+    if (!u) { UI.toast('⚠ Ingresa una URL válida'); return; }
+    this._apply(u);
+    Storage.save(App.getState());
+    UI.toast('✅ Enlace de descarga actualizado');
+  },
+  restore(url) {
+    if (url) this._apply(url);
+  },
+  _apply(url) {
+    const link = document.getElementById('download-link');
+    if (!link) return;
+    link.href = url;
+    link.style.boxShadow = '0 10px 40px rgba(240,165,0,.55)';
+    const inp = document.getElementById('download-url-input');
+    if (inp) inp.value = url;
+  }
+};
+
+/* ──────────────────────────────────────────────────────────
+   UI
+────────────────────────────────────────────────────────── */
+const UI = {
+  _tid: null,
+  toast(msg, ms = 2800) {
+    const el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(this._tid);
+    this._tid = setTimeout(() => el.classList.remove('show'), ms);
+  },
+  initReveal() {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  }
+};
+
+/* ──────────────────────────────────────────────────────────
+   APP — inicialización y API pública
+────────────────────────────────────────────────────────── */
+const App = {
+  init() {
+    AdminMode.detect();
+    AdminMode.apply();
+
+    const saved = Storage.load();
+    Videos.init(saved?.videos ?? null);
+    Videos.renderAll();
+
+    if (saved) {
+      QR.restore(saved.qrUrl);
+      Download.restore(saved.downloadUrl);
+    }
+
+    UI.initReveal();
+
+    if (AdminMode.active) {
+      console.info('[UPeU Admin] Panel activo. Usa App.* en la consola.');
+    }
+  },
+
+  /* API pública — llamada desde onclick en el HTML */
+  applyVideoSrc(id) {
+    const inp = document.getElementById(`src-input-${id}`);
+    if (inp) Videos.updateSrc(id, inp.value);
+  },
+  addVideo() {
+    if (AdminMode.active) Videos.add();
+  },
+  removeVideo(id) {
+    if (!AdminMode.active) return;
+    if (confirm('¿Eliminar este video tutorial?')) Videos.remove(id);
+  },
+  setDownloadLink() {
+    const inp = document.getElementById('download-url-input');
+    Download.setLink(inp?.value ?? '');
+  },
+  setQR() {
+    const inp = document.getElementById('qr-url-input');
+    QR.setImage(inp?.value ?? '');
+  },
+  previewQR(val) {
+    QR.preview(val);
+  },
+  clearQR() {
+    QR.clear();
+  },
+  saveAll() {
+    Storage.save(this.getState());
+    UI.toast('💾 Todo guardado correctamente');
+  },
+  getState() {
+    const qrImg = document.getElementById('qr-img-el');
+    const qrUrl = (qrImg && qrImg.src && qrImg.style.display !== 'none') ? qrImg.src : '';
+    return {
+      videos:      Videos.list,
+      downloadUrl: document.getElementById('download-link')?.href ?? '',
+      qrUrl:       qrUrl
+    };
+  }
+};
+
+/* Arranque */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => App.init());
+} else {
+  App.init();
 }
 </script>
 </body>
