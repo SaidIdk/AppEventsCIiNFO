@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPeU Events – Guía de Instalación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --upeu-blue:     #003082;
+    --upeu-blue-mid: #1255c8;
+    --upeu-blue-lt:  #2e7df7;
+    --upeu-gold:     #f0a500;
+    --upeu-gold-lt:  #ffc84a;
+    --upeu-dark:     #00112e;
+    --upeu-white:    #f4f8ff;
+    --upeu-gray:     #b0c4de;
+    --accent-cyan:   #00d4ff;
+    --radius:        14px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: var(--upeu-dark);
+    color: var(--upeu-white);
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: .35;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 80px 24px 60px;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, #1a4dbf55 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 90% 80%, #f0a50022 0%, transparent 60%),
+      linear-gradient(160deg, #001a4a 0%, #00112e 60%, #000d20 100%);
+    overflow: hidden;
+  }
+
+  .hero-grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(46,125,247,.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(46,125,247,.07) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 30%, transparent 80%);
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: rgba(46,125,247,.15);
+    border: 1px solid rgba(46,125,247,.4);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-size: .75rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--accent-cyan);
+    margin-bottom: 28px;
+    animation: fadeUp .6s ease both;
+  }
+
+  .hero-badge span { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-cyan); animation: pulse 1.5s infinite; }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    line-height: .95;
+    letter-spacing: .02em;
+    animation: fadeUp .6s .1s ease both;
+  }
+
+  .hero h1 span { color: var(--upeu-gold); }
+
+  .hero-sub {
+    font-size: clamp(.9rem, 2vw, 1.15rem);
+    font-weight: 300; color: var(--upeu-gray);
+    max-width: 560px; margin: 20px auto 40px;
+    line-height: 1.7;
+    animation: fadeUp .6s .2s ease both;
+  }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--upeu-blue-mid), var(--upeu-blue-lt));
+    color: #fff;
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 700; font-size: 1rem;
+    padding: 14px 32px; border-radius: 100px;
+    text-decoration: none;
+    box-shadow: 0 0 30px rgba(46,125,247,.4);
+    transition: transform .2s, box-shadow .2s;
+    animation: fadeUp .6s .3s ease both;
+  }
+  .hero-cta:hover { transform: translateY(-3px); box-shadow: 0 8px 40px rgba(46,125,247,.6); }
+
+  .hero-scroll {
+    position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    font-size: .7rem; letter-spacing: .15em; color: var(--upeu-gray);
+    opacity: .7;
+  }
+  .hero-scroll::after {
+    content: '';
+    display: block; width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--upeu-gray), transparent);
+    animation: scrollLine 1.6s ease-in-out infinite;
+  }
+
+  /* ── SECTION WRAPPER ── */
+  .section { position: relative; z-index: 1; padding: 80px 24px; max-width: 1100px; margin: 0 auto; }
+
+  .section-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .75rem; letter-spacing: .2em; color: var(--upeu-gold);
+    text-transform: uppercase; margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1; margin-bottom: 48px;
+  }
+
+  /* ── STEPS ── */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .step-card {
+    background: linear-gradient(145deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+    border: 1px solid rgba(46,125,247,.2);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .3s, border-color .3s, box-shadow .3s;
+  }
+  .step-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(46,125,247,.5);
+    box-shadow: 0 20px 50px rgba(0,48,130,.3);
+  }
+  .step-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--upeu-blue-lt), var(--accent-cyan));
+    opacity: 0; transition: opacity .3s;
+  }
+  .step-card:hover::before { opacity: 1; }
+
+  .step-number {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--upeu-blue-mid), var(--upeu-blue-lt));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: #fff;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(46,125,247,.4);
+  }
+
+  .step-card h3 {
+    font-weight: 700; font-size: 1.05rem; margin-bottom: 10px;
+    color: var(--upeu-white);
+  }
+  .step-card p { font-size: .9rem; color: var(--upeu-gray); line-height: 1.6; }
+
+  .step-icon {
+    font-size: 2.4rem; margin-bottom: 12px;
+  }
+
+  /* ── QR SECTION ── */
+  .qr-section {
+    background: linear-gradient(135deg, rgba(0,48,130,.3), rgba(0,30,80,.4));
+    border: 1px solid rgba(46,125,247,.25);
+    border-radius: 20px;
+    padding: 50px 40px;
+    display: flex; align-items: center; gap: 60px;
+    flex-wrap: wrap;
+  }
+
+  .qr-placeholder {
+    flex-shrink: 0;
+    width: 200px; height: 200px;
+    background: #fff;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; color: #333; text-align: center;
+    padding: 12px;
+    border: 4px solid var(--upeu-gold);
+    box-shadow: 0 0 30px rgba(240,165,0,.3);
+    overflow: hidden;
+  }
+  .qr-placeholder img { width: 100%; height: 100%; object-fit: contain; }
+
+  .qr-info h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    margin-bottom: 14px;
+  }
+  .qr-info h2 span { color: var(--upeu-gold); }
+  .qr-info p { color: var(--upeu-gray); line-height: 1.7; max-width: 440px; margin-bottom: 24px; }
+
+  .download-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--upeu-gold), var(--upeu-gold-lt));
+    color: var(--upeu-dark);
+    font-weight: 800; font-size: .95rem;
+    padding: 13px 28px; border-radius: 100px;
+    text-decoration: none;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 20px rgba(240,165,0,.35);
+  }
+  .download-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(240,165,0,.5); }
+
+  /* ── VIDEOS ── */
+  .videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 28px;
+  }
+
+  .video-card {
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(46,125,247,.18);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform .3s, box-shadow .3s;
+  }
+  .video-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 60px rgba(0,48,130,.35);
+  }
+
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 */
+    background: #000b1e;
+    overflow: hidden;
+  }
+
+  .video-wrapper iframe,
+  .video-wrapper video {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    border: none;
+  }
+
+  /* PLACEHOLDER when no video is set */
+  .video-placeholder {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px;
+    background: linear-gradient(145deg, #001a4a, #000d20);
+    cursor: pointer;
+    text-align: center; padding: 16px;
+  }
+  .video-placeholder .play-icon {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(46,125,247,.2);
+    border: 2px solid rgba(46,125,247,.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    transition: background .3s, transform .3s;
+  }
+  .video-card:hover .play-icon { background: rgba(46,125,247,.5); transform: scale(1.1); }
+  .video-placeholder p { font-size: .85rem; color: var(--upeu-gray); max-width: 180px; }
+
+  .video-body { padding: 20px 22px; }
+  .video-tag {
+    display: inline-block;
+    background: rgba(46,125,247,.15); border: 1px solid rgba(46,125,247,.3);
+    color: var(--accent-cyan);
+    font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+    padding: 3px 10px; border-radius: 100px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .video-body h3 { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+  .video-body p { font-size: .85rem; color: var(--upeu-gray); line-height: 1.55; }
+
+  /* Input para pegar URL de video */
+  .video-url-input {
+    width: 100%; margin-top: 10px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(46,125,247,.3);
+    border-radius: 8px; padding: 8px 12px;
+    color: var(--upeu-white); font-size: .8rem;
+    font-family: 'Share Tech Mono', monospace;
+    outline: none; transition: border-color .2s;
+  }
+  .video-url-input:focus { border-color: var(--upeu-blue-lt); }
+  .video-url-input::placeholder { color: rgba(176,196,222,.5); }
+
+  .apply-btn {
+    margin-top: 8px;
+    background: linear-gradient(135deg, var(--upeu-blue-mid), var(--upeu-blue-lt));
+    color: #fff; border: none; border-radius: 8px;
+    padding: 8px 18px; font-size: .8rem; font-weight: 700;
+    cursor: pointer; transition: opacity .2s;
+    font-family: 'Exo 2', sans-serif;
+  }
+  .apply-btn:hover { opacity: .85; }
+
+  /* ── REQUIREMENTS ── */
+  .req-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .req-item {
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(46,125,247,.15);
+    border-radius: 12px; padding: 20px 22px;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .req-icon {
+    font-size: 1.5rem; flex-shrink: 0; margin-top: 2px;
+  }
+  .req-item h4 { font-weight: 700; font-size: .9rem; margin-bottom: 4px; }
+  .req-item p { font-size: .8rem; color: var(--upeu-gray); line-height: 1.5; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(46,125,247,.3), transparent);
+    margin: 0 auto;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 1;
+    padding: 40px 24px;
+    text-align: center;
+    border-top: 1px solid rgba(46,125,247,.15);
+  }
+  footer p { font-size: .85rem; color: var(--upeu-gray); }
+  footer strong { color: var(--upeu-gold); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .5; transform: scale(.7); }
+  }
+  @keyframes scrollLine {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  /* Reveal on scroll */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 640px) {
+    .qr-section { flex-direction: column; padding: 32px 24px; }
+    .qr-placeholder { width: 160px; height: 160px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-badge"><span></span>Universidad Peruana Unión · Escuela de Posgrado</div>
+  <h1>Guía de<br><span>Instalación</span><br>UPeU Events</h1>
+  <p class="hero-sub">
+    Instala la aplicación oficial de eventos de la UPeU en tu dispositivo Android en tres pasos simples. Sigue los tutoriales en video para una experiencia sin complicaciones.
+  </p>
+  <a href="#pasos" class="hero-cta">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    Ver pasos de instalación
+  </a>
+  <div class="hero-scroll">SCROLL</div>
+</section>
+
+<!-- ══════════════ REQUISITOS ══════════════ -->
+<div class="divider" style="max-width:1100px;margin:0 auto;"></div>
+<div class="section reveal" id="requisitos">
+  <div class="section-label">// Antes de comenzar</div>
+  <h2 class="section-title">Requisitos previos</h2>
+  <div class="req-list">
+    <div class="req-item">
+      <div class="req-icon">📱</div>
+      <div>
+        <h4>Android 6.0 o superior</h4>
+        <p>El APK requiere Android Marshmallow (6.0) como versión mínima.</p>
+      </div>
+    </div>
+    <div class="req-item">
+      <div class="req-icon">⚙️</div>
+      <div>
+        <h4>Fuentes desconocidas</h4>
+        <p>Debes permitir la instalación desde fuentes externas en Ajustes → Seguridad.</p>
+      </div>
+    </div>
+    <div class="req-item">
+      <div class="req-icon">📶</div>
+      <div>
+        <h4>Conexión a internet</h4>
+        <p>Necesitas Wi-Fi o datos móviles para descargar el archivo APK (~85 MB).</p>
+      </div>
+    </div>
+    <div class="req-item">
+      <div class="req-icon">💾</div>
+      <div>
+        <h4>Espacio libre: 200 MB</h4>
+        <p>Asegúrate de tener al menos 200 MB libres en el almacenamiento interno.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PASOS ══════════════ -->
+<div class="divider" style="max-width:1100px;margin:0 auto;"></div>
+<div class="section reveal" id="pasos">
+  <div class="section-label">// Instalación paso a paso</div>
+  <h2 class="section-title">Tres pasos<br>para instalar</h2>
+  <div class="steps-grid">
+
+    <div class="step-card">
+      <div class="step-icon">📷</div>
+      <div class="step-number">1</div>
+      <h3>Escanea el código QR</h3>
+      <p>Abre la cámara de tu teléfono o una app lectora de QR y apunta al código que aparece abajo. Serás redirigido automáticamente al enlace de descarga oficial.</p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">📥</div>
+      <div class="step-number">2</div>
+      <h3>Descarga el APK</h3>
+      <p>En la página de MediaFire, pulsa el botón de descarga. El archivo <strong style="color:var(--accent-cyan)">UPeUEvents.apk</strong> (~85 MB) se guardará en tu carpeta de Descargas automáticamente.</p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">🗂️</div>
+      <div class="step-number">3</div>
+      <h3>Instala desde Descargas</h3>
+      <p>Abre tu <strong style="color:var(--accent-cyan)">Administrador de Archivos</strong>, ve a Descargas, toca el archivo APK y selecciona <em>Instalar</em>. Acepta los permisos que solicite la app.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════ QR + DESCARGA ══════════════ -->
+<div class="section reveal">
+  <div class="qr-section">
+    <!-- Reemplaza la src con el QR real si lo tienes como imagen -->
+    <div class="qr-placeholder" id="qr-box">
+      <img src="" alt="QR Code" id="qr-img" style="display:none;">
+      <span id="qr-label" style="color:#333;font-size:.78rem;line-height:1.4;">
+        📌 Pega aquí tu imagen QR<br>usando el campo de abajo
+      </span>
+    </div>
+    <div class="qr-info">
+      <h2>Descarga<br><span>UPeU Events</span></h2>
+      <p>
+        Escanea el código QR con la cámara de tu Android o haz clic en el botón de descarga directa. La aplicación es 100% oficial de la <strong style="color:var(--upeu-white)">Universidad Peruana Unión</strong>.
+      </p>
+      <a href="#" class="download-btn" id="download-link" onclick="return false;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar APK
+      </a>
+      <div style="margin-top:18px;">
+        <label style="font-size:.78rem;color:var(--upeu-gray);display:block;margin-bottom:6px;">🔗 URL de descarga directa:</label>
+        <input type="text" id="download-url" class="video-url-input" placeholder="https://www.mediafire.com/file/..." style="margin-top:0;">
+        <button class="apply-btn" onclick="setDownloadLink()">Aplicar enlace</button>
+      </div>
+      <div style="margin-top:14px;">
+        <label style="font-size:.78rem;color:var(--upeu-gray);display:block;margin-bottom:6px;">🖼️ URL de imagen QR (opcional):</label>
+        <input type="text" id="qr-url" class="video-url-input" placeholder="https://..." style="margin-top:0;">
+        <button class="apply-btn" onclick="setQR()">Mostrar QR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ VIDEOS ══════════════ -->
+<div class="divider" style="max-width:1100px;margin:0 auto;"></div>
+<div class="section reveal" id="tutoriales">
+  <div class="section-label">// Tutoriales en video</div>
+  <h2 class="section-title">Aprende con<br>nuestros videos</h2>
+  <div class="videos-grid" id="videos-container">
+
+    <!-- VIDEO 1 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <div class="video-placeholder" id="ph-1">
+          <div class="play-icon">▶</div>
+          <p>Tutorial: Instalación desde cero en Android</p>
+        </div>
+        <iframe id="frame-1" style="display:none;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+      </div>
+      <div class="video-body">
+        <span class="video-tag">Tutorial 1</span>
+        <h3>Instalación completa paso a paso</h3>
+        <p>Aprende a descargar e instalar UPeU Events desde cero en cualquier dispositivo Android.</p>
+        <input type="text" class="video-url-input" placeholder="Pega URL de YouTube o video (ej: https://youtu.be/...)" onchange="setVideo('1', this.value)">
+        <button class="apply-btn" onclick="setVideo('1', document.querySelector('#frame-1').previousSibling.previousSibling.querySelector('input').value || this.previousSibling.value)">Cargar video</button>
+      </div>
+    </div>
+
+    <!-- VIDEO 2 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <div class="video-placeholder" id="ph-2">
+          <div class="play-icon">▶</div>
+          <p>Tutorial: Habilitar fuentes desconocidas</p>
+        </div>
+        <iframe id="frame-2" style="display:none;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+      </div>
+      <div class="video-body">
+        <span class="video-tag">Tutorial 2</span>
+        <h3>Activar instalación de fuentes externas</h3>
+        <p>Configura tu Android para permitir la instalación de APKs fuera de la Play Store.</p>
+        <input type="text" class="video-url-input" placeholder="Pega URL de YouTube o video" onchange="">
+        <button class="apply-btn" onclick="setVideoFromBtn(this, '2')">Cargar video</button>
+      </div>
+    </div>
+
+    <!-- VIDEO 3 -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <div class="video-placeholder" id="ph-3">
+          <div class="play-icon">▶</div>
+          <p>Tutorial: Registro y primeros pasos en la app</p>
+        </div>
+        <iframe id="frame-3" style="display:none;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+      </div>
+      <div class="video-body">
+        <span class="video-tag">Tutorial 3</span>
+        <h3>Registro y uso de UPeU Events</h3>
+        <p>Cómo registrarte, explorar eventos y gestionar tus inscripciones dentro de la aplicación.</p>
+        <input type="text" class="video-url-input" placeholder="Pega URL de YouTube o video" onchange="">
+        <button class="apply-btn" onclick="setVideoFromBtn(this, '3')">Cargar video</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Botón agregar nuevo video -->
+  <div style="margin-top:32px;text-align:center;">
+    <button class="apply-btn" style="padding:12px 28px;font-size:.9rem;border-radius:100px;" onclick="addVideoCard()">
+      + Agregar otro video tutorial
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════ AYUDA ══════════════ -->
+<div class="divider" style="max-width:1100px;margin:0 auto;"></div>
+<div class="section reveal" id="ayuda" style="text-align:center;">
+  <div class="section-label">// ¿Problemas?</div>
+  <h2 class="section-title">¿Necesitas ayuda?</h2>
+  <p style="color:var(--upeu-gray);max-width:520px;margin:0 auto 36px;line-height:1.7;">
+    Si tienes inconvenientes durante la instalación, revisa los videos tutoriales o comunícate con la Escuela de Posgrado de la UPeU.
+  </p>
+  <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;">
+    <a href="https://posgrado.upeu.edu.pe" target="_blank" class="hero-cta" style="font-size:.9rem;padding:12px 26px;">
+      🌐 Visitar web oficial
+    </a>
+    <a href="mailto:posgrado@upeu.edu.pe" class="download-btn" style="font-size:.9rem;padding:12px 26px;">
+      ✉️ Contactar soporte
+    </a>
+  </div>
+</div>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+  <p>© 2025 <strong>Universidad Peruana Unión</strong> · Escuela de Posgrado · UPeU Events</p>
+  <p style="margin-top:6px;font-size:.75rem;">Todos los derechos reservados.</p>
+</footer>
+
+<!-- ══════════════ JS ══════════════ -->
+<script>
+// ── Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── YouTube URL → embed
+function toEmbedURL(url) {
+  url = url.trim();
+  // youtu.be/ID
+  let m = url.match(/youtu\.be\/([^?&]+)/);
+  if (m) return `https://www.youtube.com/embed/${m[1]}`;
+  // youtube.com/watch?v=ID
+  m = url.match(/[?&]v=([^&]+)/);
+  if (m) return `https://www.youtube.com/embed/${m[1]}`;
+  // youtube.com/embed/... already
+  if (url.includes('youtube.com/embed/')) return url;
+  // Direct video file or other
+  return url;
+}
+
+function setVideo(id, url) {
+  if (!url || !url.trim()) return;
+  const embed = toEmbedURL(url);
+  const frame = document.getElementById('frame-' + id);
+  const ph = document.getElementById('ph-' + id);
+  frame.src = embed;
+  frame.style.display = 'block';
+  if (ph) ph.style.display = 'none';
+}
+
+function setVideoFromBtn(btn, id) {
+  const input = btn.previousElementSibling;
+  setVideo(id, input.value);
+}
+
+// ── Download link
+function setDownloadLink() {
+  const url = document.getElementById('download-url').value.trim();
+  if (!url) return;
+  const link = document.getElementById('download-link');
+  link.href = url;
+  link.onclick = null;
+  link.style.boxShadow = '0 8px 30px rgba(240,165,0,.6)';
+}
+
+// ── QR image
+function setQR() {
+  const url = document.getElementById('qr-url').value.trim();
+  if (!url) return;
+  const img = document.getElementById('qr-img');
+  const lbl = document.getElementById('qr-label');
+  img.src = url;
+  img.style.display = 'block';
+  lbl.style.display = 'none';
+}
+
+// ── Add video card
+let videoCount = 3;
+function addVideoCard() {
+  videoCount++;
+  const id = videoCount;
+  const container = document.getElementById('videos-container');
+  const card = document.createElement('div');
+  card.className = 'video-card';
+  card.innerHTML = `
+    <div class="video-wrapper">
+      <div class="video-placeholder" id="ph-${id}">
+        <div class="play-icon">▶</div>
+        <p>Nuevo tutorial</p>
+      </div>
+      <iframe id="frame-${id}" style="display:none;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+    </div>
+    <div class="video-body">
+      <span class="video-tag">Tutorial ${id}</span>
+      <input type="text" class="video-url-input" placeholder="Título del video" style="margin-bottom:8px;margin-top:0;" oninput="document.getElementById('title-${id}').textContent = this.value || 'Nuevo tutorial'">
+      <h3 id="title-${id}">Nuevo tutorial</h3>
+      <input type="text" class="video-url-input" id="url-input-${id}" placeholder="Pega URL de YouTube o video">
+      <button class="apply-btn" onclick="setVideo('${id}', document.getElementById('url-input-${id}').value)">Cargar video</button>
+    </div>`;
+  container.appendChild(card);
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+</script>
+</body>
+</html>
